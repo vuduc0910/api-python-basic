@@ -120,7 +120,7 @@ def updateUser():
             newEmail = user['email']
         if newPass is None:
             newPass = user['newPass']
-        db.create_query_update(name,newPass,newEmail)
+        db.create_query_update(name, newPass, newEmail)
     except ValueError:
         response.status = 400
         return {'errors': response.status}
@@ -129,7 +129,7 @@ def updateUser():
         return {'errors': response.status}
     response.headers['Content-Type'] = 'application/json'
     return {
-        'data': json.dumps(db.create_query_get('1 or 1 = 1 --')),
+        'data': json.dumps(db.create_query_get("1' or 1 = 1 --")),
         'status': response.status
     }
 
