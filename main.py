@@ -1,5 +1,7 @@
-import bottle,re,json
-from bottle import get,post,delete,put,request,response
+import bottle
+import re
+import json
+from bottle import get, post, delete, put, request, response
 
 import models.database as db
 
@@ -10,7 +12,7 @@ email_pattern = re.compile(r'^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$')
 
 
 @get('/all')
-def getAll():
+def get_all():
     """ GET ALL """
     response.headers['Content-Type'] = 'application/json'
     response.status = 200
@@ -58,7 +60,8 @@ def addUser():
             raise ValueError
         # extract and validate name
         try:
-            if name_pattern.match(data['name']) is None or password_pattern.fullmatch(data['password']) is None or \
+            if name_pattern.match(data['name']) is None or password_pattern\
+                    .fullmatch(data['password']) is None or \
                     email_pattern.fullmatch(data['email']) is None:
                 raise ValueError
             name = data['name']
@@ -83,7 +86,7 @@ def addUser():
         return {'errors': response.status}
 
     # add user
-    db.create_query_insert(name,password,email)
+    db.create_query_insert(name, password, email)
 
     # return 200 Success
     response.headers['Content-Type'] = 'application/json'
@@ -106,21 +109,23 @@ def updateUser():
             data = request.json
         except:
             raise ValueError
-        if data['name'] is not None and request.query.name != data['name'] :
+        if data['name'] is not None and request.query.name != data['name']:
             raise ValueError
         name = data['name']
-        newEmail = None
-        newPass = None
-        if data['email'] is not None or email_pattern.fullmatch(data['email']) is not None:
-            newEmail = data['email']
-        if data['password'] is not None or password_pattern.fullmatch(data['password'] is not None):
-            newPass = data['password']
+        new_email = None
+        new_pass = None
+        if data['email'] is not None or email_pattern \
+                .fullmatch(data['email']) is not None:
+            new_email = data['email']
+        if data['password'] is not None or password_pattern \
+                .fullmatch(data['password'] is not None):
+            new_pass = data['password']
         user = db.create_query_get(name)
-        if newEmail is None:
-            newEmail = user['email']
-        if newPass is None:
-            newPass = user['newPass']
-        db.create_query_update(name, newPass, newEmail)
+        if new_email is None:
+            new_email = user['email']
+        if new_pass is None:
+            new_pass = user['newPass']
+        db.create_query_update(name, new_pass, new_email)
     except ValueError:
         response.status = 400
         return {'errors': response.status}
@@ -138,14 +143,13 @@ def updateUser():
 def deleteUser():
     """ DELETE """
     try:
-        users = db.create_query_get("1' or 1 = 1 --")
         if request.query.name is None:
             raise KeyError
         db.create_query_delete(request.query.name)
         response.status = 200
         return {
-            'data' : json.dumps(db.create_query_get("1' or 1 = 1 --")),
-            'status' : response.status
+            'data': json.dumps(db.create_query_get("1' or 1 = 1 --")),
+            'status': response.status
         }
     except KeyError:
         response.status = 409
@@ -153,4 +157,4 @@ def deleteUser():
 
 
 if __name__ == '__main__':
-    bottle.run(host = '127.0.0.1', port = 8000)
+    bottle.run(host='127.0.0.1', port=8000)
