@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base(metadata=MetaData())
 
+
 class User(Base):
     __tablename__ = "person"
     name = Column("name", String(64), primary_key=True)
