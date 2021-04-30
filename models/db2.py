@@ -14,7 +14,7 @@ class User(Base):
     email = Column("email", String(50), nullable=False)
 
 
-engine = create_engine('sqlite:///../list_user.db', echo=True)
+engine = create_engine('sqlite:///list_user.db', echo=True)
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
