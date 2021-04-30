@@ -3,8 +3,8 @@ import re
 import json
 from bottle import get, post, delete, put, request, response
 
-import models.database as db
-
+# import models.database as db
+import models.db2 as db
 app = application = bottle.default_app()
 name_pattern = re.compile(r'^[a-zA-Z\d]{1,29}$')
 password_pattern = re.compile(r'[A-Za-z0-9@#$%^&+=]{8,16}')
@@ -16,7 +16,7 @@ def get_all():
     """ GET ALL """
     response.headers['Content-Type'] = 'application/json'
     response.status = 200
-    users = db.create_query_get("1' or 1 = 1 --")
+    users = db.create_query_get()
     return {
         'data': json.dumps(users),
         'status': response.status
@@ -24,13 +24,13 @@ def get_all():
 
 
 @get('/get-one')
-def getOne():
+def get_one():
     """ GET ONE """
     try:
         if request.query.name is None:
             raise ValueError
         name = request.query.name
-        users = db.create_query_get(name)
+        users = db.create_query_get_one(name)
         if users == []:
             raise KeyError
         response.headers['Content-Type'] = 'application/json'
@@ -48,7 +48,7 @@ def getOne():
 
 
 @post('/add-user')
-def addUser():
+def add_user():
     """ POST """
     try:
         # parse input data
@@ -67,7 +67,7 @@ def addUser():
             name = data['name']
             email = data['email']
             password = data['password']
-            users = db.create_query_get("1' or 1 = 1 --")
+            users = db.create_query_get()
         except (TypeError, KeyError):
             raise ValueError
 
@@ -91,16 +91,16 @@ def addUser():
     # return 200 Success
     response.headers['Content-Type'] = 'application/json'
     return {
-        'data': json.dumps(db.create_query_get("1' or 1 = 1 --")),
+        'data': json.dumps(db.create_query_get()),
         'status': response.status
     }
 
 
 @put('/update-user')
-def updateUser():
+def update_user():
     """ PUT """
     try:
-        users = db.create_query_get("1' or 1 = 1 --")
+        users = db.create_query_get()
         if request.query.name is None:
             raise ValueError
         if request.query.name not in [user['name'] for user in users]:
@@ -120,7 +120,7 @@ def updateUser():
         if data['password'] is not None or password_pattern \
                 .fullmatch(data['password'] is not None):
             new_pass = data['password']
-        user = db.create_query_get(name)
+        user = db.create_query_get_one(name)
         if new_email is None:
             new_email = user['email']
         if new_pass is None:
@@ -134,13 +134,13 @@ def updateUser():
         return {'errors': response.status}
     response.headers['Content-Type'] = 'application/json'
     return {
-        'data': json.dumps(db.create_query_get("1' or 1 = 1 --")),
+        'data': json.dumps(db.create_query_get()),
         'status': response.status
     }
 
 
 @delete('/delete-user')
-def deleteUser():
+def delete_user():
     """ DELETE """
     try:
         if request.query.name is None:
@@ -148,7 +148,7 @@ def deleteUser():
         db.create_query_delete(request.query.name)
         response.status = 200
         return {
-            'data': json.dumps(db.create_query_get("1' or 1 = 1 --")),
+            'data': json.dumps(db.create_query_get()),
             'status': response.status
         }
     except KeyError:
